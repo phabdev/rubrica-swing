@@ -1,4 +1,4 @@
-package it.phabdev;
+package it.phabdev.rubricaswing;
 
 import org.junit.jupiter.api.Test;
 
