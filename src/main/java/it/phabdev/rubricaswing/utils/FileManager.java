@@ -1,6 +1,6 @@
 package it.phabdev.rubricaswing.utils;
 
-import it.phabdev.rubricaswing.model.Person;
+import it.phabdev.rubricaswing.model.Contact;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -11,8 +11,8 @@ public class FileManager {
     private static final String FILE_NAME = "informazioni.txt";
 
     // Metodo per leggere le persone dal file
-    public static List<Person> loadPersons() {
-        List<Person> people = new ArrayList<>();
+    public static List<Contact> loadPersons() {
+        List<Contact> people = new ArrayList<>();
 
         File file = new File(FILE_NAME);
         if (!file.exists()) {
@@ -46,7 +46,7 @@ public class FileManager {
                     String indirizzo = parts[2];
                     String telefono = parts[3];
                     int eta = Integer.parseInt(parts[4]);
-                    people.add(new Person(nome, cognome, indirizzo, telefono, eta));
+                    people.add(new Contact(nome, cognome, indirizzo, telefono, eta));
                 }
             }
         } catch (IOException e) {
@@ -57,9 +57,9 @@ public class FileManager {
     }
 
     // Metodo per salvare le persone nel file
-    public static void savePersons(List<Person> people) {
+    public static void savePersons(List<Contact> people) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME))) {
-            for (Person person : people) {
+            for (Contact person : people) {
                 String line = person.getNome() + ";" +
                               person.getCognome() + ";" +
                               person.getIndirizzo() + ";" +

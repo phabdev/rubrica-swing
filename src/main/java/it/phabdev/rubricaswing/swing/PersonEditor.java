@@ -1,17 +1,16 @@
 package it.phabdev.rubricaswing.swing;
 
-import it.phabdev.rubricaswing.swing.MainFrame;
-import it.phabdev.rubricaswing.model.Person;
+import it.phabdev.rubricaswing.model.Contact;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class PersonEditor extends JDialog {
     private JTextField txtNome, txtCognome, txtIndirizzo, txtTelefono, txtEta;
-    private Person person;
+    private Contact person;
     private boolean isNew;
 
-    public PersonEditor(MainFrame parent, Person person) {
+    public PersonEditor(MainFrame parent, Contact person) {
         super(parent, "Editor Persona", true);
         this.person = person;
         this.isNew = (person == null);
@@ -51,7 +50,7 @@ public class PersonEditor extends JDialog {
         try {
             int eta = Integer.parseInt(txtEta.getText().trim());
             if (isNew) {
-                person = new Person(txtNome.getText(), txtCognome.getText(), txtIndirizzo.getText(), txtTelefono.getText(), eta);
+                person = new Contact(txtNome.getText(), txtCognome.getText(), txtIndirizzo.getText(), txtTelefono.getText(), eta);
             } else {
                 person.setNome(txtNome.getText());
                 person.setCognome(txtCognome.getText());

@@ -1,6 +1,9 @@
 package it.phabdev.rubricaswing.swing;
 
-import it.phabdev.rubricaswing.model.Person;
+import it.phabdev.rubricaswing.config.ConfigManager;
+import it.phabdev.rubricaswing.model.Contact;
+import it.phabdev.rubricaswing.db.DatabaseManager;
+import it.phabdev.rubricaswing.db.MySqlDatabaseManager;
 import it.phabdev.rubricaswing.utils.FileManager;
 
 import javax.swing.*;
@@ -13,7 +16,9 @@ import java.util.List;
 public class MainFrame extends JFrame {
     private JTable table;
     private DefaultTableModel tableModel;
-    private List<Person> people;
+    private List<Contact> people;
+    private DatabaseManager dbManager;
+    private boolean useDb;
 
     public MainFrame() {
         setTitle("Rubrica Swing");
@@ -21,9 +26,25 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Carica le persone dal file
-        people = FileManager.loadPersons();
-        tableModel = new DefaultTableModel(new String[]{"Nome", "Cognome", "Indirizzo", "Telefono"}, 0){
+        try {
+            ConfigManager configManager = new ConfigManager();
+            useDb = configManager.isUseDb();
+
+            if (useDb) {
+                dbManager = new MySqlDatabaseManager(configManager);
+                people = dbManager.getContacts();
+            } else {
+                people = FileManager.loadPersons();
+            }
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Errore imprevisto: " + e.getMessage(), "Errore", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
+
+        tableModel = new DefaultTableModel(new String[]{"Nome", "Cognome", "Indirizzo", "Telefono"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -48,25 +69,34 @@ public class MainFrame extends JFrame {
         add(new JScrollPane(table), BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Salvataggio automatico alla chiusura
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                FileManager.savePersons(people);
-            }
-        });
+        if (!useDb) {
+            /*
+            addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    FileManager.savePersons(people);
+                }
+            });
+            */
+        }
 
         setVisible(true);
     }
 
     private void refreshTable() {
         tableModel.setRowCount(0);
-        for (Person person : people) {
+        //if (useDb) {
+        for (Contact person : people) {
             tableModel.addRow(new Object[]{person.getNome(), person.getCognome(), person.getIndirizzo(), person.getTelefono()});
         }
+        //} else {
+        //  for (Contact person : people) {
+        //    tableModel.addRow(new Object[]{person.getNome(), person.getCognome(), person.getIndirizzo(), person.getTelefono()});
+        //}
+        //}
     }
 
-    private void openEditor(Person person) {
+    private void openEditor(Contact person) {
         new PersonEditor(this, person);
     }
 
@@ -76,27 +106,50 @@ public class MainFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Seleziona una persona da modificare.");
             return;
         }
-        Person person = people.get(selectedRow);
+        Contact person = people.get(selectedRow);
         openEditor(person);
     }
 
     private void deletePerson() {
         int selectedRow = table.getSelectedRow();
+        Contact person = people.get(selectedRow);
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Seleziona una persona da eliminare.");
             return;
         }
-        Person person = people.get(selectedRow);
-        int confirm = JOptionPane.showConfirmDialog(this, "Eliminare la persona " + person.getNome() + " " + person.getCognome() + "?", "Conferma Eliminazione", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            people.remove(selectedRow);
-            refreshTable();
+        if (useDb) {
+            String nome = (String) tableModel.getValueAt(selectedRow, 0);
+            String cognome = (String) tableModel.getValueAt(selectedRow, 1);
+            int confirm = JOptionPane.showConfirmDialog(this, "Eliminare la persona " + nome + " " + cognome + "?", "Conferma Eliminazione", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                people.remove(selectedRow);
+                dbManager.deleteContact(person.getId());
+                refreshTable();
+            }
+        } else {
+            int confirm = JOptionPane.showConfirmDialog(this, "Eliminare la persona " + person.getNome() + " " + person.getCognome() + "?", "Conferma Eliminazione", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                people.remove(selectedRow);
+                FileManager.savePersons(people);
+                refreshTable();
+            }
         }
     }
 
-    public void addOrUpdatePerson(Person person, boolean isNew) {
-        if (isNew) {
-            people.add(person);
+    public void addOrUpdatePerson(Contact person, boolean isNew) {
+        if (useDb) {
+            if (isNew) {
+                Integer id = dbManager.saveContact(person);
+                person.setId(id);
+                people.add(person);
+            } else {
+                dbManager.updateContact(person);
+            }
+        } else {
+            if (isNew) {
+                people.add(person);
+            }
+            FileManager.savePersons(people);
         }
         refreshTable();
     }

@@ -1,13 +1,17 @@
 package it.phabdev.rubricaswing.db;
 
-import java.sql.Connection;
+import it.phabdev.rubricaswing.model.Contact;
+
 import java.util.List;
 
 public interface DatabaseManager {
     void connect();
     void createTable();
-    void saveContact(String nome, String cognome, String telefono);
-    List<String[]> getContacts();
-    void deleteContact(String nome, String cognome);
+    Integer saveContact(Contact contact);
+    void updateContact(Contact contact);
+    List<Contact> getContacts();
+
+    //void deleteContacts(String nome, String cognome);
+    void deleteContact(Integer id);
     void close();
 }

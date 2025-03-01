@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class ConfigManager {
+public class ConfigManager2 {
     private static final String CONFIG_FILE = "config.properties";
 
     private boolean useDb;
@@ -16,7 +16,7 @@ public class ConfigManager {
 
     private String dbPassword;
 
-    public ConfigManager() {
+    public ConfigManager2() {
         loadConfig();
     }
 
