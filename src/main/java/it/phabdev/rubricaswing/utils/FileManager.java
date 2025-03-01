@@ -5,6 +5,7 @@ import it.phabdev.rubricaswing.model.Person;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class FileManager {
     private static final String FILE_NAME = "informazioni.txt";
@@ -18,7 +19,7 @@ public class FileManager {
             System.out.println("⚠️ Il file " + FILE_NAME + " non esiste. Creazione di un nuovo file.");
             return people;
         }
-
+        /*
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -33,7 +34,23 @@ public class FileManager {
                 }
             }
         } catch (IOException e) {
-            System.err.println("❌ Errore nella lettura del file: " + e.getMessage());
+            System.err.println("Errore nella lettura del file: " + e.getMessage());
+        }*/
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] parts = line.split(";");
+                if (parts.length == 5) {
+                    String nome = parts[0];
+                    String cognome = parts[1];
+                    String indirizzo = parts[2];
+                    String telefono = parts[3];
+                    int eta = Integer.parseInt(parts[4]);
+                    people.add(new Person(nome, cognome, indirizzo, telefono, eta));
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Errore nella lettura del file: " + e.getMessage());
         }
 
         return people;
@@ -52,7 +69,7 @@ public class FileManager {
                 bw.newLine();
             }
         } catch (IOException e) {
-            System.err.println("❌ Errore nella scrittura del file: " + e.getMessage());
+            System.err.println("Errore nella scrittura del file: " + e.getMessage());
         }
     }
 }

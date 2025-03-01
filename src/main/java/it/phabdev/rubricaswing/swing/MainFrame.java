@@ -2,7 +2,6 @@ package it.phabdev.rubricaswing.swing;
 
 import it.phabdev.rubricaswing.model.Person;
 import it.phabdev.rubricaswing.utils.FileManager;
-import it.phabdev.rubricaswing.utils.PersonEditor;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -24,7 +23,12 @@ public class MainFrame extends JFrame {
 
         // Carica le persone dal file
         people = FileManager.loadPersons();
-        tableModel = new DefaultTableModel(new String[]{"Nome", "Cognome", "Indirizzo", "Telefono", "Età"}, 0);
+        tableModel = new DefaultTableModel(new String[]{"Nome", "Cognome", "Indirizzo", "Telefono"}, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         table = new JTable(tableModel);
         refreshTable();
 
@@ -58,7 +62,7 @@ public class MainFrame extends JFrame {
     private void refreshTable() {
         tableModel.setRowCount(0);
         for (Person person : people) {
-            tableModel.addRow(new Object[]{person.getNome(), person.getCognome(), person.getIndirizzo(), person.getTelefono(), person.getEta()});
+            tableModel.addRow(new Object[]{person.getNome(), person.getCognome(), person.getIndirizzo(), person.getTelefono()});
         }
     }
 
@@ -82,8 +86,12 @@ public class MainFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Seleziona una persona da eliminare.");
             return;
         }
-        people.remove(selectedRow);
-        refreshTable();
+        Person person = people.get(selectedRow);
+        int confirm = JOptionPane.showConfirmDialog(this, "Eliminare la persona " + person.getNome() + " " + person.getCognome() + "?", "Conferma Eliminazione", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            people.remove(selectedRow);
+            refreshTable();
+        }
     }
 
     public void addOrUpdatePerson(Person person, boolean isNew) {

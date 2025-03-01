@@ -1,4 +1,4 @@
-package it.phabdev.rubricaswing.utils;
+package it.phabdev.rubricaswing.swing;
 
 import it.phabdev.rubricaswing.swing.MainFrame;
 import it.phabdev.rubricaswing.model.Person;
