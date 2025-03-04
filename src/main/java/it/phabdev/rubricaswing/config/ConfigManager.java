@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.Properties;
 
 public class ConfigManager {
-    private static final String CONFIG_FILE = "config.properties";
+    private static final String CONFIG_FILE = "credenziali_database.properties";
 
     private boolean useDb;
     private String dbUrl;
