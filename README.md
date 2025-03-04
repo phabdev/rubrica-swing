@@ -12,20 +12,20 @@ L'applicazione permette di aggiungere, modificare ed eliminare contatti, con la 
 
 ## Configurazione
 
-L'applicazione utilizza un file di configurazione `config.properties` per determinare il metodo di persistenza dei dati.
+L'applicazione utilizza un file di configurazione `credenziali_database.properties` per determinare il metodo di persistenza dei dati.
 Se il file non esiste o è vuoto, l'applicazione utilizzerà di default il file `informazioni.txt` per la persistenza dei dati.
-Se il file `config.properties` esiste ed è configurato correttamente, l'applicazione può utilizzare un database MySQL.
+Se il file `credenziali_database.properties` esiste ed è configurato correttamente, l'applicazione può utilizzare un database MySQL.
 
-### File `config.properties`
+### File `credenziali_database.properties`
 
-Il file `config.properties` deve essere posizionato nella stessa directory del file JAR dell'applicazione e può contenere i seguenti parametri:
+Il file `credenziali_database.properties` deve essere posizionato nella stessa directory del file JAR dell'applicazione e può contenere i seguenti parametri:
 
 - `USE_DB`: flag per abilitare l'uso del database (valori possibili: `true` o `false`).
 - `DB_URL`: URL di connessione al database MySQL.
 - `DB_USER`: nome utente per la connessione al database.
 - `DB_PASSWORD`: password per la connessione al database.
 
-**Esempio di `config.properties` per l'uso del database**:
+**Esempio di `credenziali_database.properties` per l'uso del database**:
 
 ```
 USE_DB=true
@@ -34,7 +34,7 @@ DB_USER=nome_utente
 DB_PASSWORD=password
 ```
 
-**Esempio di `config.properties` per l'uso del file di testo**:
+**Esempio di `credenziali_database.properties` per l'uso del file di testo**:
 
 ```
 USE_DB=false
@@ -47,7 +47,7 @@ USE_DB=false
 
 ## Esecuzione dell'applicazione
 
-1. Assicurarsi che il file `config.properties` sia configurato correttamente e posizionato nella stessa directory del file JAR dell'applicazione. (Se non dovesse esistere, creerà un file "informazioni.txt" senza collegarsi ad alcun database).
+1. Assicurarsi che il file `credenziali_database.properties` sia configurato correttamente e posizionato nella stessa directory del file JAR dell'applicazione. (Se non dovesse esistere, creerà un file "informazioni.txt" senza collegarsi ad alcun database).
 2. Eseguire il file JAR dell'applicazione con il comando (se il jar eseguibile si chiama "rubrica-swing.jar"):
 
    ```sh
@@ -56,6 +56,6 @@ USE_DB=false
 
 ## Note
 
-- Se il file `config.properties` non esiste, è vuoto o il flag `USE_DB` è impostato su `false`, l'applicazione utilizzerà il file `informazioni.txt` per la persistenza dei dati.
+- Se il file `credenziali_database.properties` non esiste, è vuoto o il flag `USE_DB` è impostato su `false`, l'applicazione utilizzerà il file `informazioni.txt` per la persistenza dei dati.
 - Se il flag `USE_DB` è impostato su `true`, ma i parametri di connessione al database sono mancanti o errati, l'applicazione mostrerà un messaggio di errore e non si avvierà.
 - Assicurarsi che il database e la tabella siano configurati correttamente prima di utilizzare l'applicazione con la persistenza su database.
